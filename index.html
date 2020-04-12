@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<!-- npm install form-serializer -->
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/2.9.0/jquery.serializejson.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(() => {
+            const NewAmenitiesBlock = () => {
+                var i = $('#acount').val();
+                $('#acount').val(i + 1);
+                var block = `<label for="aname[]">Amenity name:</label><br>
+                                <input type="text" name="aname[]"><br>
+                                <label for="acat[]">Amenity cateogry:</label><br>
+                                <input type="text"  name="acat[]"><br>
+                                <label for="adesc[]">Amenity description:</label><br>
+                                <input type="text" name="adesc[]"><br>`;
+                console.log('added');
+                $('#amenities').append(block);
+            }
+            $('#addam').click(() => {
+                NewAmenitiesBlock();
+                $('form').serializeJSON();
+            });
+
+            $('#addclub').submit((e)=>{
+                e.preventDefault();
+                console.log('submitted');
+                // console.log($('#addclub').serializeJSON());
+                fetch('/',{
+                    method: 'post',
+                    body: JSON.stringify($('#addclub').serializeJSON()),
+                    headers: {
+                        "Content-Type" : "application/json; charset = utf-8"
+                    }
+                    
+                }).then((response)=>{
+                    return response.json(); 
+                }).then((response)=>{
+                    console.log("Inserted ObjectID: "+response.document._id);
+            
+                });
+                // document.getElementById("#addclub").reset();
+            });
+
+            const populate_form = (data) =>{
+                console.log(data);
+            }
+            const getClubInfo = (id) => {
+                fetch('/'+id, { method: "get" }).then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    populate_form(data);
+                });
+            }
+            getClubInfo('5e925c7140df0b20ac70251e');
+
+            
+
+        });
+    </script>
+
+    <title>page2</title>
+</head>
+
+<body>
+    <h2>inserting to database</h2>
+
+    <form id='addclub'>
+        <label for="cname">Club name:</label><br>
+        <input type="text" id="cname" name="cname"><br>
+        
+        <label for="ccat">Club Category:</label><br>
+        <input type="text" id="ccat" name="ccat"><br>
+        
+        <label for="caddr">Club Address:</label><br>
+        <input type="text" id="caddr" name="caddr"><br>
+        <input type="hidden" id="acount" name="acount" value="1">
+        <button id = 'addam' type="button">Add new Amenities </button>
+        <div  id='amenities'>
+            <label for="aname[]">Amenity name:</label><br>
+            <input type="text" name="aname[]"><br>
+            <label for="acat[]">Amenity cateogry:</label><br>
+            <input type="text"  name="acat[]"><br>
+            <label for="adesc[]">Amenity description:</label><br>
+            <input type="text" name="adesc[]"><br>
+        </div>
+
+        <button type="button" id='edit' class="btn btn-primary">Edit</button>
+        <button type="submit" class="btn btn-primary">Add club</button>
+    </form>
+
+    
+</body>
+
+</html>
