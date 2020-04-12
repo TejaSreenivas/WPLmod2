@@ -25,7 +25,8 @@
                                 <label for="acat[]">Amenity cateogry:</label><br>
                                 <input type="text"  name="acat[]"><br>
                                 <label for="adesc[]">Amenity description:</label><br>
-                                <input type="text" name="adesc[]"><br>`;
+                                <input type="text" name="adesc[]"><br>
+                                <input type="hidden" id="flag[]" name="flag[]" value=1>`;
                 console.log('added');
                 $('#amenities').append(block);
             }
@@ -64,20 +65,19 @@
                     n = n-1;
                 }
                 var form_elements = $("#addclub").find("input");
-                console.log(form_elements);
+                // console.log(form_elements);
                 form_elements[0].value = data.cname;
                 form_elements[1].value = data.ccat;
                 form_elements[2].value = data.caddr;
                 var i;
                 var j=0;
-                for (i=4;i<form_elements.length;i+=3){
+                for (i=5;i<form_elements.length;i+=4){
                     form_elements[i].value = data.aname[j];
                     form_elements[i+1].value = data.acat[j];
                     form_elements[i+2].value = data.adesc[j];
                     j++;
                 }
                 
-                console.log(form_elements[4]);
             }
 
             const getClubInfo = (id) => {
@@ -87,10 +87,10 @@
                     populate_form(data);
                 });
             }
-            getClubInfo('5e92926d47abb733fce50985');
+            getClubInfo('5e9382442b38a405c47a83c2');
+
 
             
-
         });
     </script>
 
@@ -109,8 +109,9 @@
         
         <label for="caddr">Club Address:</label><br>
         <input type="text" id="caddr" name="caddr"><br>
-        <input type="hidden" id="acount" name="acount" value="0">
-        <button id = 'addam' type="button">Add new Amenities </button>
+        <input type="hidden" id="acount" name="acount" value=0>
+        <input type="hidden" id="status" name="status" value=1>
+        <button id = 'addam' type="button">Add new Amenities</button>
         <div  id='amenities'>
             <!-- <label for="aname[]">Amenity name:</label><br>
             <input type="text" name="aname[]"><br>
