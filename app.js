@@ -2,11 +2,12 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const path = require('path');
 const Joi = require('joi');
+var favicon = require('serve-favicon')
 
 const db = require("./db");
 const collection = "clubs";
 const app = express();
-
+app.use(favicon(path.join(__dirname, 'favicon.ico')))
 // schema used for data validation for our todo document
 // const schema = Joi.object().keys({
 //     todo : Joi.string().required()

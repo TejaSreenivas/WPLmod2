@@ -17,6 +17,7 @@
     "joi": "^14.3.0",
     "jquery-serializejson": "^2.9.0",
     "mongodb": "^3.5.5",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "serve-favicon": "^2.5.0"
   }
 }

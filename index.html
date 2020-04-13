@@ -8,7 +8,6 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="shortcut icon" href="">
     <!-- Bootstrap CSS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -21,8 +20,12 @@
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
     <script>
+
         $(document).ready(() => {
+            
             var editClubId;
+            
+            // Adding New amenities block either of create club form or edit form section
             const NewAmenitiesBlock = (block_id) => {
                 var block = `<label for="aname[]">Amenity name:</label><br>
                                 <input type="text" name="aname[]"><br>
@@ -34,13 +37,22 @@
                 console.log('added');
                 $(block_id).append(block);
             }
+            
+            // when clicking add amenities in create clubs form
             $('#addam').click(() => {
                 var i = parseInt($('#acount').val());
                 $('#acount').val(i + 1);
                 NewAmenitiesBlock('#amenities');
-                $('form').serializeJSON();
             });
-
+            
+            // when clicking add amenities in edit club form
+            $('#addam_e').click(() => {
+                var i = parseInt($('#acount').val());
+                $('#acount_e').val(i + 1);
+                NewAmenitiesBlock('#amenities_e');
+            });
+            
+            // when submitting create new club form 
             $('#newClubSubmit').click(()=>{
                 // e.preventDefault();
                 console.log('submitted');
@@ -61,9 +73,14 @@
                 $("#addclub")[0].reset();
                 // $('#amenities').empty();
             });
+            
+            // when exiting the create form clear ameneties block 
             $('#newClubModal').on('hidden.bs.modal', function (e) {
                 $('#amenities').empty();
+                $('#acount').val(0);
             })
+            
+            // populating the form when the editing the club form
             const populate_form = (data) =>{
                 console.log(data);
                 var n = data.acount;
@@ -76,6 +93,7 @@
                 form_elements[0].value = data.cname;
                 form_elements[1].value = data.ccat;
                 form_elements[2].value = data.caddr;
+                form_elements[3].value = data.acount;
                 var i;
                 var j=0;
                 for (i=5;i<form_elements.length;i+=4){
@@ -86,7 +104,8 @@
                 }
                 
             }
-
+            
+            // returns the club information given club id
             const getClubInfo = (id) => {
                 fetch('/'+id, { method: "get" }).then((response) => {
                     return response.json();
@@ -94,7 +113,8 @@
                     populate_form(data);
                 });
             }
-
+            
+            // trigger edit form when clicking specific club button
             $('.clubbtn').click((e)=>{
                 var id = e.target.value;
                 // console.log(e.target.value);
@@ -103,6 +123,7 @@
             })
             // getClubInfo('5e9382442b38a405c47a83c2');
 
+            // on click event for edit club information form
             $('#editClubSubmit').click(()=>{
                 fetch('/'+editClubId, {
                     method: "put",
@@ -117,12 +138,17 @@
                      $("#editclub")[0].reset();
                 }})
             })
-
+            
+            // removing amenities form when exiting the edit club info
             $('#editClubModal').on('hidden.bs.modal', function (e) {
                 $('#amenities_e').empty();
+                $('#acount_e').val(0);
             })
-
             
+            // Filtering 
+            const query = (club_name, club_cat, club_address, acount, a_name, a_cat, a_desc)=>{
+
+            }
         });
     </script>
 
@@ -133,9 +159,8 @@
     <h2>inserting to database</h2>
 
     
-
+    <!-- Creat club form  -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newClubModal">Add New Club</button>
-
     <div class="modal fade" id="newClubModal" tabindex="-1" role="dialog" aria-labelledby="newClubModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -147,17 +172,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- <form>
-                        <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">Recipient:</label>
-                            <input type="text" class="form-control" id="recipient-name">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">Message:</label>
-                            <textarea class="form-control" id="message-text"></textarea>
-                        </div>
-                    </form> -->
-
                     <form id='addclub'>
                         <label for="cname">Club name:</label><br>
                         <input type="text" id="cname" name="cname"><br>
@@ -171,15 +185,7 @@
                         <input type="hidden" id="status" name="status" value=1>
                         <button id='addam' type="button">Add new Amenities</button>
                         <div id='amenities'>
-                            <!-- <label for="aname[]">Amenity name:</label><br>
-                                <input type="text" name="aname[]"><br>
-                                <label for="acat[]">Amenity cateogry:</label><br>
-                                <input type="text"  name="acat[]"><br>
-                                <label for="adesc[]">Amenity description:</label><br>
-                                <input type="text" name="adesc[]"><br> -->
                         </div>
-                    
-                        <!-- <button type="submit" class="btn btn-primary">Add club</button> -->
                     </form>
 
                 </div>
@@ -194,8 +200,8 @@
 
 <h2>Editing existing data</h2>
 
+<!-- Edit club information form -->
 <button type="button" class="btn btn-primary clubbtn" data-toggle="modal" data-target="#editClubModal" value = '5e9382442b38a405c47a83c2'>Edit 1st club</button>
-
 <div class="modal fade" id="editClubModal" tabindex="-1" role="dialog" aria-labelledby="editClubModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -207,17 +213,6 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- <form>
-                        <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">Recipient:</label>
-                            <input type="text" class="form-control" id="recipient-name">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="col-form-label">Message:</label>
-                            <textarea class="form-control" id="message-text"></textarea>
-                        </div>
-                    </form> -->
-
                 <form id='editclub'>
                     <label for="cname">Club name:</label><br>
                     <input type="text" id="cname_e" name="cname"><br>
@@ -231,17 +226,8 @@
                     <input type="hidden" id="status_e" name="status" value=1>
                     <button id='addam_e' type="button">Add new Amenities</button>
                     <div id='amenities_e'>
-                        <!-- <label for="aname[]">Amenity name:</label><br>
-                                <input type="text" name="aname[]"><br>
-                                <label for="acat[]">Amenity cateogry:</label><br>
-                                <input type="text"  name="acat[]"><br>
-                                <label for="adesc[]">Amenity description:</label><br>
-                                <input type="text" name="adesc[]"><br> -->
                     </div>
-
-                    <!-- <button type="submit" class="btn btn-primary">Add club</button> -->
                 </form>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
