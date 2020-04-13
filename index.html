@@ -5,6 +5,9 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="shortcut icon" href="">
     <!-- Bootstrap CSS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -19,7 +22,8 @@
         crossorigin="anonymous"></script>
     <script>
         $(document).ready(() => {
-            const NewAmenitiesBlock = () => {
+            var editClubId;
+            const NewAmenitiesBlock = (block_id) => {
                 var block = `<label for="aname[]">Amenity name:</label><br>
                                 <input type="text" name="aname[]"><br>
                                 <label for="acat[]">Amenity cateogry:</label><br>
@@ -28,17 +32,17 @@
                                 <input type="text" name="adesc[]"><br>
                                 <input type="hidden" id="flag[]" name="flag[]" value=1>`;
                 console.log('added');
-                $('#amenities').append(block);
+                $(block_id).append(block);
             }
             $('#addam').click(() => {
                 var i = parseInt($('#acount').val());
                 $('#acount').val(i + 1);
-                NewAmenitiesBlock();
+                NewAmenitiesBlock('#amenities');
                 $('form').serializeJSON();
             });
 
-            $('#addclub').submit((e)=>{
-                e.preventDefault();
+            $('#newClubSubmit').click(()=>{
+                // e.preventDefault();
                 console.log('submitted');
                 // console.log($('#addclub').serializeJSON());
                 fetch('/',{
@@ -54,17 +58,20 @@
                     console.log("Inserted ObjectID: "+response.document._id);
             
                 });
-                // document.getElementById("#addclub").reset();
+                $("#addclub")[0].reset();
+                // $('#amenities').empty();
             });
-
+            $('#newClubModal').on('hidden.bs.modal', function (e) {
+                $('#amenities').empty();
+            })
             const populate_form = (data) =>{
                 console.log(data);
                 var n = data.acount;
                 while(n>0){
-                    NewAmenitiesBlock();
+                    NewAmenitiesBlock('#amenities_e');
                     n = n-1;
                 }
-                var form_elements = $("#addclub").find("input");
+                var form_elements = $("#editclub").find("input");
                 // console.log(form_elements);
                 form_elements[0].value = data.cname;
                 form_elements[1].value = data.ccat;
@@ -87,8 +94,33 @@
                     populate_form(data);
                 });
             }
-            getClubInfo('5e9382442b38a405c47a83c2');
 
+            $('.clubbtn').click((e)=>{
+                var id = e.target.value;
+                // console.log(e.target.value);
+                getClubInfo(id);
+                editClubId = id;
+            })
+            // getClubInfo('5e9382442b38a405c47a83c2');
+
+            $('#editClubSubmit').click(()=>{
+                fetch('/'+editClubId, {
+                    method: "put",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8"
+                },
+                body: JSON.stringify($('#editclub').serializeJSON())
+            }).then((response)=>{
+                return response.json();
+            }).then((data)=>{
+                if(data.ok==1){
+                     $("#editclub")[0].reset();
+                }})
+            })
+
+            $('#editClubModal').on('hidden.bs.modal', function (e) {
+                $('#amenities_e').empty();
+            })
 
             
         });
@@ -100,31 +132,125 @@
 <body>
     <h2>inserting to database</h2>
 
-    <form id='addclub'>
-        <label for="cname">Club name:</label><br>
-        <input type="text" id="cname" name="cname"><br>
-        
-        <label for="ccat">Club Category:</label><br>
-        <input type="text" id="ccat" name="ccat"><br>
-        
-        <label for="caddr">Club Address:</label><br>
-        <input type="text" id="caddr" name="caddr"><br>
-        <input type="hidden" id="acount" name="acount" value=0>
-        <input type="hidden" id="status" name="status" value=1>
-        <button id = 'addam' type="button">Add new Amenities</button>
-        <div  id='amenities'>
-            <!-- <label for="aname[]">Amenity name:</label><br>
-            <input type="text" name="aname[]"><br>
-            <label for="acat[]">Amenity cateogry:</label><br>
-            <input type="text"  name="acat[]"><br>
-            <label for="adesc[]">Amenity description:</label><br>
-            <input type="text" name="adesc[]"><br> -->
-        </div>
-
-        <button type="submit" class="btn btn-primary">Add club</button>
-    </form>
-
     
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newClubModal">Add New Club</button>
+
+    <div class="modal fade" id="newClubModal" tabindex="-1" role="dialog" aria-labelledby="newClubModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newClubModalLabel">New message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form> -->
+
+                    <form id='addclub'>
+                        <label for="cname">Club name:</label><br>
+                        <input type="text" id="cname" name="cname"><br>
+                    
+                        <label for="ccat">Club Category:</label><br>
+                        <input type="text" id="ccat" name="ccat"><br>
+                    
+                        <label for="caddr">Club Address:</label><br>
+                        <input type="text" id="caddr" name="caddr"><br>
+                        <input type="hidden" id="acount" name="acount" value=0>
+                        <input type="hidden" id="status" name="status" value=1>
+                        <button id='addam' type="button">Add new Amenities</button>
+                        <div id='amenities'>
+                            <!-- <label for="aname[]">Amenity name:</label><br>
+                                <input type="text" name="aname[]"><br>
+                                <label for="acat[]">Amenity cateogry:</label><br>
+                                <input type="text"  name="acat[]"><br>
+                                <label for="adesc[]">Amenity description:</label><br>
+                                <input type="text" name="adesc[]"><br> -->
+                        </div>
+                    
+                        <!-- <button type="submit" class="btn btn-primary">Add club</button> -->
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id='newClubSubmit' class="btn btn-primary" data-dismiss="modal">Create Club</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<h2>Editing existing data</h2>
+
+<button type="button" class="btn btn-primary clubbtn" data-toggle="modal" data-target="#editClubModal" value = '5e9382442b38a405c47a83c2'>Edit 1st club</button>
+
+<div class="modal fade" id="editClubModal" tabindex="-1" role="dialog" aria-labelledby="editClubModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editClubModalLabel">New message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="col-form-label">Recipient:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">Message:</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form> -->
+
+                <form id='editclub'>
+                    <label for="cname">Club name:</label><br>
+                    <input type="text" id="cname_e" name="cname"><br>
+
+                    <label for="ccat">Club Category:</label><br>
+                    <input type="text" id="ccat_e" name="ccat"><br>
+
+                    <label for="caddr">Club Address:</label><br>
+                    <input type="text" id="caddr_e" name="caddr"><br>
+                    <input type="hidden" id="acount_e" name="acount" value=0>
+                    <input type="hidden" id="status_e" name="status" value=1>
+                    <button id='addam_e' type="button">Add new Amenities</button>
+                    <div id='amenities_e'>
+                        <!-- <label for="aname[]">Amenity name:</label><br>
+                                <input type="text" name="aname[]"><br>
+                                <label for="acat[]">Amenity cateogry:</label><br>
+                                <input type="text"  name="acat[]"><br>
+                                <label for="adesc[]">Amenity description:</label><br>
+                                <input type="text" name="adesc[]"><br> -->
+                    </div>
+
+                    <!-- <button type="submit" class="btn btn-primary">Add club</button> -->
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id='editClubSubmit' class="btn btn-primary" data-dismiss="modal">Edit Club</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 
 </html>
