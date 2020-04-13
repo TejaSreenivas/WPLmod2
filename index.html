@@ -147,8 +147,40 @@
             
             // Filtering 
             const query = (club_name, club_cat, club_address, acount, a_name, a_cat, a_desc)=>{
-
+                fetch('/clubs' , { method: "get" }).then((response) => {
+                    return response.json();
+                }).then((data) => {
+                    console.log(data);
+                    // filter data
+                    var fdata = [];
+                    var i,j,ok=0;
+                    for(i=0;i<data.length;i++){
+                        ok=-1;
+                        if ( data[i].cname.search(club_name)>=0 && data[i].ccat.search(club_cat)>=0
+                            && data[i].caddr.search(club_address)>=0 ) {
+                                ok = 1;
+                                if (data[i].acount>0){
+                                    j = 0;
+                                    for(j=0;j<data[i].aname.length;j++){
+                                        if(data[i].flag[j]==1){
+                                            if(data[i].aname[j].search(a_name)<0 || data[i].acat[j].search(a_cat)<0 || data[i].adesc[j].search(a_desc)<0){
+                                                ok=-1;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if(data[i].acount<acount)
+                                    ok = -1;        
+                            }
+                        if(ok>0)
+                            fdata.push(data[i])
+                    }
+                    console.log(fdata);
+                    console.log(data[0].caddr.search('addr1'))
+                });
             }
+            query("","","addr1",1,"","","");
         });
     </script>
 
