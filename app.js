@@ -5,7 +5,7 @@ const Joi = require('joi');
 var favicon = require('serve-favicon')
 
 const db = require("./db");
-const collection = "clubs";
+const collection_clubs = "clubs";
 const app = express();
 app.use(favicon(path.join(__dirname, 'favicon.ico')))
 // schema used for data validation for our todo document
@@ -23,9 +23,9 @@ app.get('/',(req,res)=>{
 
 // read
 app.get('/clubs',(req,res)=>{
-    // get all Todo documents within our todo collection
+    // get all clubs documents within our clubs collection
     // send back to user as json
-    db.getDB().collection(collection).find({}).toArray((err,documents)=>{
+    db.getDB().collection(collection_clubs).find({}).toArray((err,documents)=>{
         if(err)
             console.log(err);
         else{
@@ -36,14 +36,14 @@ app.get('/clubs',(req,res)=>{
 
 // get specific club info 
 
-app.get('/:id', (req, res) => {
+app.get('/clubs/:id', (req, res) => {
     // Primary Key of Todo Document we wish to update
     const clubID = req.params.id;
     // Document used to update
     const userInput = req.body;
     // Find Document By ID and Update
     // console.log(userInput);
-    db.getDB().collection(collection).findOne({ _id: db.getPrimaryKey(clubID) }, (err, result) => {
+    db.getDB().collection(collection_clubs).findOne({ _id: db.getPrimaryKey(clubID) }, (err, result) => {
         if (err)
             console.log(err);
         else {
@@ -54,14 +54,14 @@ app.get('/:id', (req, res) => {
 
 
 // update
-app.put('/:id',(req,res)=>{
+app.put('/clubs/:id',(req,res)=>{
     // Primary Key of Todo Document we wish to update
     const clubID = req.params.id;
     // Document used to update
     const userInput = req.body;
     // Find Document By ID and Update
-    console.log(userInput);
-    db.getDB().collection(collection).findOneAndUpdate({_id : db.getPrimaryKey(clubID)},{$set : userInput},{returnOriginal : false},(err,result)=>{
+    // console.log(userInput);
+    db.getDB().collection(collection_clubs).findOneAndUpdate({_id : db.getPrimaryKey(clubID)},{$set : userInput},{returnOriginal : false},(err,result)=>{
         if(err)
             console.log(err);
         else{
@@ -74,14 +74,14 @@ app.put('/:id',(req,res)=>{
 
 
 //create
-app.post('/',(req,res,next)=>{
+app.post('/clubs',(req,res,next)=>{
     // Document to be inserted
     const userInput = req.body;
 
     // Validate document
     // If document is invalid pass to error middleware
     // else insert document within todo collection
-    db.getDB().collection(collection).insertOne(userInput, (err, result) => {
+    db.getDB().collection(collection_clubs).insertOne(userInput, (err, result) => {
         if (err) {
             const error = new Error("Failed to insert clubs Document");
             error.status = 400;
@@ -94,12 +94,12 @@ app.post('/',(req,res,next)=>{
 
 
 
-//delete
-app.delete('/:id',(req,res)=>{
+// TEJA NOTES: NOT NEEDED
+app.delete('/clubs/:id',(req,res)=>{
     // Primary Key of Todo Document
     const clubID = req.params.id;
     // Find Document By ID and delete document from record
-    db.getDB().collection(collection).findOneAndDelete({_id : db.getPrimaryKey(clubID)},(err,result)=>{
+    db.getDB().collection(collection_clubs).findOneAndDelete({_id : db.getPrimaryKey(clubID)},(err,result)=>{
         if(err)
             console.log(err);
         else

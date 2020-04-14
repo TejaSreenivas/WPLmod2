@@ -57,7 +57,7 @@
                 // e.preventDefault();
                 console.log('submitted');
                 // console.log($('#addclub').serializeJSON());
-                fetch('/',{
+                fetch('/clubs/',{
                     method: 'post',
                     body: JSON.stringify($('#addclub').serializeJSON()),
                     headers: {
@@ -107,7 +107,7 @@
             
             // returns the club information given club id
             const getClubInfo = (id) => {
-                fetch('/'+id, { method: "get" }).then((response) => {
+                fetch('/clubs/'+id, { method: "get" }).then((response) => {
                     return response.json();
                 }).then((data) => {
                     populate_form(data);
@@ -125,7 +125,7 @@
 
             // on click event for edit club information form
             $('#editClubSubmit').click(()=>{
-                fetch('/'+editClubId, {
+                fetch('/clubs/'+editClubId, {
                     method: "put",
                 headers: {
                     "Content-Type": "application/json; charset=utf-8"
