@@ -3,11 +3,14 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const Joi = require('joi');
 var favicon = require('serve-favicon')
+const cors = require('cors')
 
 const db = require("./db");
 const collection_clubs = "clubs";
 const app = express();
 app.use(favicon(path.join(__dirname, 'favicon.ico')))
+
+app.use(cors())
 // schema used for data validation for our todo document
 // const schema = Joi.object().keys({
 //     todo : Joi.string().required()
@@ -17,9 +20,9 @@ app.use(favicon(path.join(__dirname, 'favicon.ico')))
 app.use(bodyParser.json());
 
 // serve static html file to user
-app.get('/',(req,res)=>{
-    res.sendFile(path.join(__dirname,'index.html'));
-});
+// app.get('/',(req,res)=>{
+//     res.sendFile(path.join(__dirname,'index.html'));
+// });
 
 // read
 app.get('/clubs',(req,res)=>{
