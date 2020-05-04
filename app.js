@@ -95,6 +95,41 @@ app.post('/clubs',(req,res,next)=>{
     });  
 });
 
+// Favorite get user fav list
+
+app.get('/fav/:id', (req, res) => {
+    // Primary Key of Todo Document we wish to update
+    const userID = req.params.id;
+    // Document used to update
+    const userInput = req.body;
+    // Find Document By ID and Update
+    // console.log(userInput);
+    db.getDB().collection('fav').findOne({ _id: userID }, (err, result) => {
+        if (err)
+            console.log(err);
+        else {
+            res.json(result);
+        }
+    });
+});
+
+// Favorite update
+app.put('/fav/:id',(req,res)=>{
+    // Primary Key of Todo Document we wish to update
+    const userID = req.params.id;
+    // Document used to update
+    const userInput = req.body;
+    // Find Document By ID and Update
+    // console.log(userInput);
+    db.getDB().collection('fav').findOneAndUpdate({_id : userID},{$set : userInput},{returnOriginal : false},(err,result)=>{
+        if(err)
+            console.log(err);
+        else{
+            res.json(result);
+        }      
+    });
+});
+
 
 
 // TEJA NOTES: NOT NEEDED
