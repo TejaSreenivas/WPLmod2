@@ -4,9 +4,14 @@ const path = require('path');
 const Joi = require('joi');
 var favicon = require('serve-favicon')
 const cors = require('cors')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
+
 
 const db = require("./db");
 const collection_clubs = "clubs";
+const collection_user = "users"
 const app = express();
 app.use(favicon(path.join(__dirname, 'favicon.ico')))
 
@@ -15,6 +20,10 @@ app.use(cors())
 // const schema = Joi.object().keys({
 //     todo : Joi.string().required()
 // });
+
+// var Users = require('./routes/Users')
+
+// app.use('/users', Users)
 
 // parses json data sent to us by the user 
 app.use(bodyParser.json());
@@ -72,10 +81,7 @@ app.put('/clubs/:id',(req,res)=>{
         }      
     });
 });
-
-
-
-
++
 //create
 app.post('/clubs',(req,res,next)=>{
     // Document to be inserted
@@ -131,7 +137,6 @@ app.put('/fav/:id',(req,res)=>{
 });
 
 
-
 // TEJA NOTES: NOT NEEDED
 app.delete('/clubs/:id',(req,res)=>{
     // Primary Key of Todo Document
@@ -144,6 +149,107 @@ app.delete('/clubs/:id',(req,res)=>{
             res.json(result);
     });
 });
+
+// users
+process.env.SECRET_KEY = 'secret'
+
+app.post('/users/register', (req, res) => {
+    const today = new Date()
+    const userData = {
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      email: req.body.email,
+      password: req.body.password,
+      created: today,
+      membership_type: req.body.membership_type,
+      isAdmin: req.body.isAdmin
+    }
+  
+    db.getDB().collection(collection_user).findOne({
+      email: req.body.email
+    })
+      .then(user => {
+        if (!user) {
+          bcrypt.hash(req.body.password, 10, (err, hash) => {
+            userData.password = hash
+            db.getDB().collection(collection_user).insertOne(userData)
+              .then(user => {
+                res.json({ status: user.email + 'Registered!' })
+              })
+              .catch(err => {
+                res.send('error: ' + err)
+              })
+          })
+        } else {
+          res.json({ error: 'User already exists' })
+        }
+      })
+      .catch(err => {
+        res.send('error: ' + err)
+      })
+  })
+
+  
+  app.post('/users/login', (req, res) => {
+    db.getDB().collection(collection_user).findOne({
+    email: req.body.email
+  })
+    .then(user => {
+      if (user) {
+        if (bcrypt.compareSync(req.body.password, user.password)) {
+          // Passwords match
+          const payload = {
+            _id: user._id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            isAdmin: user.isAdmin
+          }
+          let token = jwt.sign(payload, process.env.SECRET_KEY, {
+            expiresIn: 1440
+          })
+          res.send(token)
+        } else {
+          // Passwords don't match
+          res.send(401, 'missing authorization header');
+        }
+      } else {
+        res.send(401, 'missing authorization header');
+      }
+    })
+    .catch(err => {
+      res.send('error: ' + err)
+    })
+})
+
+app.get('/users/profile', (req, res) => {
+    var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)
+  
+    db.getDB().collection(collection_user).findOne({
+      _id: decoded._id
+    })
+      .then(user => {
+        if (user) {
+          res.json(user)
+        } else {
+          res.send('dfghj')
+        }
+      })
+      .catch(err => {
+        res.send('error: ' + err)
+      })
+  })
+
+  app.get('/users/userdetails',(req,res)=>{
+    db.getDB().collection(collection_user).find({}).toArray((err,documents)=>{
+        if(err)
+            console.log(err);
+        else{
+            res.json(documents);
+        }
+    });
+});
+  
 
 // Middleware for handling Error
 // Sends Error Response Back to User

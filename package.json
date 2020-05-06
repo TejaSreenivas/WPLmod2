@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^4.0.1",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
@@ -17,7 +18,9 @@
     "form-serializer": "^2.5.0",
     "joi": "^14.3.0",
     "jquery-serializejson": "^2.9.0",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.5",
+    "mongoose": "^5.9.12",
     "path": "^0.12.7",
     "serve-favicon": "^2.5.0"
   }
