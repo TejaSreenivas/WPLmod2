@@ -101,6 +101,22 @@ app.post('/clubs',(req,res,next)=>{
     });  
 });
 
+// Favorite post new user
+
+app.post('/fav',(req,res)=>{
+    // Document used to update
+    const userInput = req.body;
+    // console.log(userInput);
+    db.getDB().collection('fav').insertOne(userInput, (err, result)=>{
+        if(err)
+            console.log(err);
+        else{
+            res.json(result);
+        }      
+    });
+});
+
+
 // Favorite get user fav list
 
 app.get('/fav/:id', (req, res) => {
