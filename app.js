@@ -172,18 +172,21 @@ app.post('/booking',(req,res,next)=>{
 });
 
 // return booking query
-app.get('/booking',(req,res)=>{
-  // get all clubs documents within our clubs collection
-  // send back to user as json
-  db.getDB().collection('booking').find({}).toArray((err,documents)=>{
-      if(err)
-          console.log(err);
-      else{
-          res.json(documents);
-      }
-  });
+app.get('/book',(req,res)=>{
+  // Document to be inserted
+  const userInput = req.body;
+  // console.log(userInput);
+  // Validate document
+  // If document is invalid pass to error middleware
+  // else insert document within todo collection
+  db.getDB().collection('booking').find(userInput).toArray((err,documents)=>{
+    if(err)
+        console.log(err);
+    else{
+        res.json(documents);
+    }
+  });  
 });
-
 
 // Booking update
 app.put('/booking/:id',(req,res)=>{
