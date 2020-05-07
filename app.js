@@ -172,7 +172,7 @@ app.post('/booking',(req,res,next)=>{
 });
 
 // return booking query
-app.get('/book',(req,res)=>{
+app.post('/book',(req,res)=>{
   // Document to be inserted
   const userInput = req.body;
   // console.log(userInput);
