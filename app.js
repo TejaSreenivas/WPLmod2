@@ -81,7 +81,7 @@ app.put('/clubs/:id',(req,res)=>{
         }      
     });
 });
-+
+
 //create
 app.post('/clubs',(req,res,next)=>{
     // Document to be inserted
@@ -150,6 +150,56 @@ app.put('/fav/:id',(req,res)=>{
             res.json(result);
         }      
     });
+});
+
+// Booking new 
+app.post('/booking',(req,res,next)=>{
+  // Document to be inserted
+  const userInput = req.body;
+
+  // Validate document
+  // If document is invalid pass to error middleware
+  // else insert document within todo collection
+  db.getDB().collection('booking').insertOne(userInput, (err, result) => {
+      if (err) {
+          const error = new Error("Failed to insert booking Document");
+          error.status = 400;
+          next(error);
+      }
+      else
+          res.json({ result: result, document: result.ops[0], msg: "Successfully inserted booking!!!", error: null });
+  });  
+});
+
+// return booking query
+app.get('/booking',(req,res)=>{
+  // get all clubs documents within our clubs collection
+  // send back to user as json
+  db.getDB().collection('booking').find({}).toArray((err,documents)=>{
+      if(err)
+          console.log(err);
+      else{
+          res.json(documents);
+      }
+  });
+});
+
+
+// Booking update
+app.put('/booking/:id',(req,res)=>{
+  // Primary Key of Todo Document we wish to update
+  const bookID = req.params.id;
+  // Document used to update
+  const userInput = req.body;
+  // Find Document By ID and Update
+  // console.log(userInput);
+  db.getDB().collection('booking').findOneAndUpdate({_id : db.getPrimaryKey(bookID)},{$set : userInput},{returnOriginal : false},(err,result)=>{
+      if(err)
+          console.log(err);
+      else{
+          res.json(result);
+      }      
+  });
 });
 
 
