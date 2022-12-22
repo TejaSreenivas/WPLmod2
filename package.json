@@ -19,7 +19,7 @@
     "form-serializer": "^2.5.0",
     "joi": "^14.3.0",
     "jquery-serializejson": "^2.9.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.12",
     "path": "^0.12.7",
